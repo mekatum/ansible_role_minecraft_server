@@ -1,0 +1,27 @@
+---
+- name: Install minecraft server
+  ansible.builtin.get_url:
+    url: '{{ minecraft_server_url }}'
+    dest: '{{ minecraft_path }}'
+    mode: '0644'
+
+- name: Add minecraft-cli util
+  ansible.builtin.copy:
+    src: files/opt/minecraft/minecraft-cli
+    dest: '{{ minecraft_path }}'
+    owner: '{{ minecraft_user }}'
+    group: '{{ minecraft_group }}'
+    mode: '0755'
+
+- name: Render minecraft init script
+  ansible.builtin.template:
+    src: templates/etc/init.d/minecraft.j2 
+    dest: /etc/init.d/minecraft
+    mode: '0755'
+
+- name: Start minecraft server
+  ansible.builtin.service:
+    name: minecraft
+    state: started
+    enabled: true
+

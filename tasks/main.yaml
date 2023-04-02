@@ -1,0 +1,10 @@
+---
+- name: Create user
+  import_tasks: users.yaml
+
+- name: Install packages
+  import_tasks: packages.yaml
+
+- name: Deploy minecraft
+  import_tasks: minecraft.yaml
+

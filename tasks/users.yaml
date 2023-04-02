@@ -1,0 +1,7 @@
+---
+- name: Create user
+  ansible.builtin.user:
+    name: '{{ minecraft_user }}'
+    groups: '{{ minecraft_group }}'
+    shell: /sbin/nologin
+

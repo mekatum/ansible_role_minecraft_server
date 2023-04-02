@@ -1,0 +1,15 @@
+---
+- name: Install OpenJDK
+  ansible.builtin.apk:
+    name: openjdk17-jre-headless
+    update_cache: true
+    state: present
+
+- name: Create dir for minecraft server
+  ansible.builtin.file:
+    path: '{{ minecraft_path }}'
+    state: directory
+    mode: '0755'
+    owner: '{{ minecraft_user }}'
+    group: '{{ minecraft_group }}'
+

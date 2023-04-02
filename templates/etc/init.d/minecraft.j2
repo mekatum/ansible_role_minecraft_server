@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+description="Start minecraft server"
+command="/usr/bin/java"
+command_args="-server -Xmx{{ minecraft_jvm_max_ram }}M -Xms{{ minecraft_jvm_init_ram }}M -jar server.jar nogui"
+command_background=true
+command_user="{{ minecraft_user }}:{{ minecraft_group }}"
+pidfile="/run/$RC_SVCNAME.pid"
+directory="{{ minecraft_path }}"
+extra_started_commands="reload"
+
+reload() {
+  ebegin "Reloading ${RC_SVCNAME}"
+  {{ minecraft_minecraft_cli_path }} -h {{ minecraft_server_ip }}:{{ minecraft_rcon_port }} -p {{ minecraft_rcon_pass }} reload
+  eend $?
+}
+
+stop_pre() {
+  {{ minecraft_minecraft_cli_path }} -h {{ minecraft_server_ip }}:{{ minecraft_rcon_port }} -p {{ minecraft_rcon_pass }} "say {{ minecraft_server_shutdown_message }}"  
+  {{ minecraft_minecraft_cli_path }} -h {{ minecraft_server_ip }}:{{ minecraft_rcon_port }} -p {{ minecraft_rcon_pass }} save-all && sleep {{ minecraft_server_shutdown_delay }}
+}
+
+stop() {
+  {{ minecraft_minecraft_cli_path }} -h {{ minecraft_server_ip }}:{{ minecraft_rcon_port }} -p {{ minecraft_rcon_pass }} stop
+}
+
