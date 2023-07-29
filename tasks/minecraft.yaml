@@ -4,6 +4,7 @@
     url: '{{ minecraft_server_url }}'
     dest: '{{ minecraft_path }}'
     mode: '0644'
+  notify: restart_minecraft
 
 - name: Add minecraft-cli util
   ansible.builtin.copy:
@@ -15,13 +16,67 @@
 
 - name: Render minecraft init script
   ansible.builtin.template:
-    src: templates/etc/init.d/minecraft.j2 
+    src: templates/etc/init.d/minecraft.j2
     dest: /etc/init.d/minecraft
     mode: '0755'
 
-- name: Start minecraft server
+- name: Check if minecraft configs already exists
+  ansible.builtin.stat:
+    path: '{{ minecraft_path }}/server.properties'
+  register: minecraft_server_properties
+
+- name: Start minecraft server for create minecraft configs
   ansible.builtin.service:
     name: minecraft
     state: started
     enabled: true
+  when: minecraft_server_properties.stat.exists == false
+  register: minecraft_init_start
+
+- name: Pause for 1 minutes to init start minecraft
+  ansible.builtin.pause:
+    minutes: 1
+  when: minecraft_init_start.changed
+
+- name: Collect minecraft server status
+  ansible.builtin.service_facts:
+
+- name: Reset status of minecraft service
+  ansible.builtin.shell:
+    cmd: service minecraft zap
+  when: ansible_facts.services['minecraft']['state'] == 'crashed'
+
+- name: Accept EULA
+  ansible.builtin.replace:
+    dest: '{{ minecraft_path }}/eula.txt'
+    regexp: 'eula=false'
+    replace: 'eula=true'
+  when: minecraft_eula | lower == 'true'
+
+- name: Change rcon creds
+  ansible.builtin.replace:
+    dest: '{{ minecraft_path }}/server.properties'
+    regexp: '{{ item.regexp }}'
+    replace: '{{ item.replace }}'
+  loop:
+    - { regexp: 'rcon.password=.*', replace: 'rcon.password={{ minecraft_rcon_pass }}' }
+    - { regexp: 'enable-rcon=.*', replace: 'enable-rcon=true' }
+
+- name: Check if minecraft configs already exists
+  ansible.builtin.stat:
+    path: '{{ minecraft_path }}/server.properties'
+  register: minecraft_server_properties
+
+- name: Start minecraft server for playing
+  ansible.builtin.service:
+    name: minecraft
+    state: started
+    enabled: true
+  when: minecraft_server_properties.stat.exists == true
+  register: minecraft_started
+
+- name: Pause for {{ minecraft_pause_time }} minutes to generate world
+  ansible.builtin.pause:
+    minutes: '{{ minecraft_pause_time }}'
+  when: minecraft_started.changed
 

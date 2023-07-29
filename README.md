@@ -38,7 +38,6 @@ user@host:~$ ansible-playbook minecraft.yaml
 
 ## Default vars
 
-
 * `minecraft_path` — path to server files
 * `minecraft_user` — user which will run server
 * `minecraft_group` — group which will run serve
@@ -52,3 +51,4 @@ user@host:~$ ansible-playbook minecraft.yaml
 * `minecraft_minecraft_cli_path` — path to minecraft-cli binary
 * `minecraft_server_shutdown_message` — notification before server shutdown
 * `minecraft_server_shutdown_delay` — delay before server shutdown
+* `minecraft_eula` — accept EULA, default `false`

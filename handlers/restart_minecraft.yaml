@@ -1,0 +1,8 @@
+---
+- name: Restart minecraft
+  ansible.builtin.service:
+    name: minecraft
+    state: restarted
+  listen: restart_minecraft
+  when: minecraft_server_properties.stat.exists == true
+

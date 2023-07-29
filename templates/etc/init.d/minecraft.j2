@@ -8,6 +8,7 @@ command_user="{{ minecraft_user }}:{{ minecraft_group }}"
 pidfile="/run/$RC_SVCNAME.pid"
 directory="{{ minecraft_path }}"
 extra_started_commands="reload"
+extra_commands="force_stop"
 
 reload() {
   ebegin "Reloading ${RC_SVCNAME}"
@@ -21,6 +22,10 @@ stop_pre() {
 }
 
 stop() {
-  {{ minecraft_minecraft_cli_path }} -h {{ minecraft_server_ip }}:{{ minecraft_rcon_port }} -p {{ minecraft_rcon_pass }} stop
+  {{ minecraft_minecraft_cli_path }} -h {{ minecraft_server_ip }}:{{ minecraft_rcon_port }} -p {{ minecraft_rcon_pass }} stop && sleep 10
+}
+
+force_stop() {
+  kill -9 $(cat /run/$RC_SVCNAME.pid)
 }
 

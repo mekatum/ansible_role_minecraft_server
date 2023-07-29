@@ -1,0 +1,4 @@
+---
+- name: Restart minecraft
+  import_tasks: restart_minecraft.yaml
+
