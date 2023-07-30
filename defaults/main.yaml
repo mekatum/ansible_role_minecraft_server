@@ -6,7 +6,7 @@ minecraft_group: minecraft
 minecraft_jvm_max_ram: 2048
 minecraft_jvm_init_ram: 512
 minecraft_jvm_extra_opts:
-minecraft_server_url: https://piston-data.mojang.com/v1/objects/f69c284232d7c7580bd89a5a4931c3581eae1378/server.jar
+minecraft_server_url: https://piston-data.mojang.com/v1/objects/84194a2f286ef7c14ed7ce0090dba59902951553/server.jar
 minecraft_server_ip: 0.0.0.0
 minecraft_rcon_port: 25575
 minecraft_rcon_pass: $up3r_s3cr3t
